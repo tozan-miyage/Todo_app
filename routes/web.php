@@ -15,7 +15,7 @@ Route::get('/', 'HomeController@index');
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::resource("goals","GoalController");
+Route::resource("goals","GoalController")->middleware('auth');
 //            GET|HEAD  | goals                          | goals.index         | App\Http\Controllers\GoalController@index                              | web          |
 // |        | POST      | goals                          | goals.store         | App\Http\Controllers\GoalController@store                              | web          |
 // |        | GET|HEAD  | goals/create                   | goals.create        | App\Http\Controllers\GoalController@create                             | web          |
@@ -24,7 +24,7 @@ Route::resource("goals","GoalController");
 // |        | DELETE    | goals/{goal}                   | goals.destroy       | App\Http\Controllers\GoalController@destroy                            | web          |
 // |        | GET|HEAD  | goals/{goal}/edit              | goals.edit          | App\Http\Controllers\GoalController@edit        
 
-Route::resource("goals.todos","TodoController");
+Route::resource("goals.todos","TodoController")->middleware('auth');
 //            GET|HEAD  | goals/{goal}/todos             | goals.todos.index   | App\Http\Controllers\TodoController@index                              | web          |
 // |        | POST      | goals/{goal}/todos             | goals.todos.store   | App\Http\Controllers\TodoController@store                              | web          |
 // |        | GET|HEAD  | goals/{goal}/todos/create      | goals.todos.create  | App\Http\Controllers\TodoController@create                             | web          |
@@ -34,7 +34,7 @@ Route::resource("goals.todos","TodoController");
 // |        | GET|HEAD  | goals/{goal}/todos/{todo}/edit | goals.todos.edit    | App\Http\Controllers\TodoController@edit          
 
 
-Route::post('/goals/{goal}/todos/{todo}/sort',"TodoController@sort");
+Route::post('/goals/{goal}/todos/{todo}/sort',"TodoController@sort")->middleware('auth');
             // | POST      | goals/{goal}/todos/{todo}/sort |                     | App\Http\Controllers\TodoController@sort                               | web          |
 
 Auth::routes();
