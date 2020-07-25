@@ -3,73 +3,74 @@
 namespace App\Http\Controllers;
 
 use App\Todo;
+// リレーションを使用するために追加
+use App\Goal;
 use Illuminate\Http\Request;
+// ログインしているユーザーのTodoのみをレスポンスとして返す
+use Illuminate\Support\Facades\Auth;
 
 class TodoController extends Controller
 {
+    // show/create/editは削除
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, Goal $goal)
     {
-        //
+        // $goalに紐づいたtodo()を昇順で、doneがtrueでポジションがあるもの？？
+        $todos = $goal->todos()->orderBy('done','asc')->orderBy('position','asc')->get();
+        
+        return response()->json($todos);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
+    
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Goal $goal)
     {
-        //
+        // 新規作成
+        $todo = new Todo();
+        // contentをpostされた内容に
+        $todo->content = request('content');
+        // ユーザーIDはログインユーザー
+        $todo->user_id = Auth::id();
+        // ゴールIDはpostされたID
+        $todo->goal_id = $goal->id;
+        // positionはpostされたもの
+        $todo->position = request('position');
+        //????
+        $todo->done= false;
+        // 保存
+        $todo->save();
+        
+        $todos = $goal->todos()->orderBy('done','asc')->orderBy('position','asc')->get();
+        return response()->json($todos);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Todo  $todo
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Todo $todo)
+    
+    public function update(Request $request,Goal $goal, Todo $todo)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Todo  $todo
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Todo $todo)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Todo  $todo
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Todo $todo)
-    {
-        //
+        // contentをpostされた内容に
+        $todo->content = request('content');
+        // ユーザーIDはログインユーザー
+        $todo->user_id = Auth::id();
+        // ゴールIDはpostされたID
+        $todo->goal_id = $goal->id;
+        // positionはpostされたもの
+        $todo->position = request('position');
+        // ??????
+        $todo->done= (bool) request('done');
+        // 保存
+        $todo->save();
+        
+        $todos = $goal->todos()->orderBy('done','asc')->orderBy('position','asc')->get();
+        return response()->json($todos);
     }
 
     /**
@@ -78,8 +79,31 @@ class TodoController extends Controller
      * @param  \App\Todo  $todo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Todo $todo)
+    public function destroy(Request $request,Goal $goal,Todo $todo)
     {
-        //
+        $todo->delete();
+        
+        $todos = $goal->todos()->orderBy('done','asc')->orderBy('position','asc')->get();
+        return response()->json($todos);
+        
+    }
+    
+    public function sort(Request $request,Goal $goal,Todo $todo)
+    {
+        $exchangeTodo = Todo::where('position',request('sortId'))->first();
+        
+        $lastTodo = Todo::where('position',request('sortId'))->latest('position')->first();
+        
+        if(request('sortId') == 0){
+            $todo->moveBefore($exchangeTodo);
+        }else if (request('sortId') - 1 == $lastTodo->position){
+            $todo->moveAfter($exchangeTodo);
+        }else {
+            $todo->moveAfter($exchangetodo);
+        }
+        
+        $todos = $goal->todos()->orderBy('done','asc')->orderBy('position','asc')->get();
+        
+        return response()->json($todos);
     }
 }

@@ -19,7 +19,7 @@ class CreateTodosTable extends Migration
             $table->integer('user_id');
             $table->integer('goal_id');
             $table->integer('position');
-            $table->boolean('done')->default();
+            $table->boolean('done')->default(false);
             $table->timestamps();
         });
     }
