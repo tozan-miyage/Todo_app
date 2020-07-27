@@ -110,13 +110,11 @@ class TodoController extends Controller
         
         return response()->json($todos);
     }
-    public function addTag(Request $request,Goal $goal, Todo $todo, Tag $tag)
+    public function addTag(Request $request, Goal $goal, Todo $todo, Tag $tag)
     {
         // $todoと$tagを中間テーブルで紐づける。
         $todo->tags()->attach($tag->id);
-        
-        $todos = $goal()->todos()->with('tags')->orderBy('done','asc')->orderBy('position','asc')->get();
-        
+        $todos = $goal->todos()->with('tags')->orderBy('done','asc')->orderBy('position','asc')->get();
         return response()->json($todos);
     }
     public function removeTag(Request $request,Goal $goal, Todo $todo, Tag $tag)

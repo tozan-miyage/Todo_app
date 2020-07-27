@@ -49,6 +49,6 @@ class User extends Authenticatable
     
     public function tags()
     {
-        return $tihs->hasMany('App\Tag');
+        return $this->hasMany('App\Tag');
     }
 }

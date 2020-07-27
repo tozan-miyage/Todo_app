@@ -50,6 +50,8 @@ class TagController extends Controller
         $tag->user_id = Auth::id();
         // 保存
         $tag->save();
+        
+        $user = Auth::user();
         // 保存した全てのタグを格納
         $tags = $user->tags;
         // json形式で返す

@@ -29,7 +29,6 @@ class CreateTagsTable extends Migration
     public function down()
     {
         Schema::table('tags', function (Blueprint $table){
-            
             $table->dropColumn('title');
             $table->dropColumn('user_id');
         });
