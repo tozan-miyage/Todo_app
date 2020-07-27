@@ -1,6 +1,7 @@
 <template>
     <div class="container-fruid h-100 pt-5">
         <i class="fa fa-plus pl-3" data-toggle="modal" data-target="#goalModal"></i><span class="align-middle"> Create A New Goal</span>
+        <i class="fa fa-plus align-middle pl-4 pr-1" data-toggle="modal" data-target="#tagModal"></i><span class="align-middle">Manage Tag</span>
 
         <div class="modal fade" id="goalModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -20,7 +21,49 @@
                 </div>
             </div>
         </div>
+            <div class="modal fade" id="tagModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">New Tag Name</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>
+                    <div class="modal-body">
+                        <input v-model="tagTitle" class="form-control">
+                        <div v-for="(key, index) in tags" :key="index">
+                            <button class="btn btn-secondary m-1" v-on:click="tagTitle = tags[index].title; tagId = tags[index].id" data-toggle="modal" data-target="#editTagModal" data-dismiss="modal">{{ tags[index].title }}</button>
+                            <button class="btn btn-danger m-1" v-on:click="deleteTag(tags[index].id)">✖</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" v-on:click="addNewTag">Add</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <div class="modal fade" id="editTagModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit Tag Name</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#tagModal" v-on:click="tagTitle = ''; tagId = ''">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>
+                    <div class="modal-body">
+                        <input v-model="tagTitle" class="form-control">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" v-on:click="editTagTitle(tagId)">Edit</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#tagModal" v-on:click="tagTitle = ''; tagId = ''">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="modal fade" id="editGoalModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -88,7 +131,10 @@ export default {
         return {
             id: "",
             title: "",
-            goals: []
+            tagId: "",
+            tagTitle: "",
+            goals: [],
+            tags: []
         }
     },
     components: {
@@ -96,6 +142,7 @@ export default {
     },
     mounted: function () {
         this.getAllGaols();
+        this.getAllTags();
     },
     methods: {
         getAllGaols: function () {
@@ -143,7 +190,55 @@ export default {
                 console.log(error)
             })
             this.id = ""
-        }
+        },
+        getAllTags: function () {
+            axios.get("/tags").then((response) => {
+                console.log(response)
+                for(let i = 0; i < response.data.length; i++) {
+                    this.tags.push(response.data[i])
+                    console.log(this.tags[i])
+                }
+                console.log(this.tags)
+            }, (error) => {
+                console.log(error)
+            })
+        },
+        addNewTag: function () {
+            axios.defaults.headers['X-CSRF-TOKEN'] = $('meta[name=csrf-token]').attr('content');
+            axios.defaults.headers['content-type'] = 'application/json';
+            axios.post("/tags", {title: this.tagTitle}).then((response) => {
+                this.tags.length = 0;
+                for (let i = 0; i < response.data.length; i++) {
+                    this.tags.push(response.data[i])
+                }
+            }, (error) => {
+                console.log(error)
+            })
+            this.tagTitle = ""
+        },
+        editTagTitle: function (id) {
+            axios.defaults.headers['X-CSRF-TOKEN'] = $('meta[name=csrf-token]').attr('content');
+            axios.defaults.headers['content-type'] = 'application/json';
+            axios.post(`/tags/${id}`, {title: this.tagTitle, _method: 'patch'}).then((response) => {
+                this.tags.length = 0;
+                for (let i = 0; i < response.data.length; i++) {
+                    this.tags.push(response.data[i])
+                }
+            }, (error) => {
+                console.log(error)
+            })
+            this.tagTitle = ""
+        },
+        deleteTag: function (id) {
+            axios.defaults.headers['X-CSRF-TOKEN'] = $('meta[name=csrf-token]').attr('content');
+            axios.defaults.headers['content-type'] = 'application/json';
+
+            axios.post(`/tags/${id}`, {_method: 'delete'}).then((response) => {
+                this.tags = response.data;
+            }, (error) => {
+                console.log(error)
+            })
+        },
     }
 }
 </script>

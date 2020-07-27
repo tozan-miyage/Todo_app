@@ -37,6 +37,12 @@ Route::resource("goals.todos","TodoController")->middleware('auth');
 Route::post('/goals/{goal}/todos/{todo}/sort',"TodoController@sort")->middleware('auth');
             // | POST      | goals/{goal}/todos/{todo}/sort |                     | App\Http\Controllers\TodoController@sort                               | web          |
 
+Route::resource("tags", "TagController")->middleware('auth');
+// |        | POST      | tags                           | tags.store          | App\Http\Controllers\TagController@store                               | web,auth     |
+// |        | GET|HEAD  | tags                           | tags.index          | App\Http\Controllers\TagController@index                               | web,auth     |
+// |        | GET|HEAD  | tags/create                    | tags.create         | App\Http\Controllers\TagController@create                              | web,auth     |
+// |        | GET|HEAD  | tags/{tag}                     | tags.show           | App\Http\Controllers\TagController@show                                | web,auth     |
+// |        | PUT|PATCH | tags/{tag}                     | tags.update         | App\Http\Controllers\TagController@update                              | web,auth     |
+// |        | DELETE    | tags/{tag}                     | tags.destroy        | App\Http\Controllers\TagController@destroy                             | web,auth     |
+// |        | GET|HEAD  | tags/{tag}/edit                | tags.edit           | App\Http\Controllers\TagController@edit                                | web,auth     |
 Auth::routes();
-
-
