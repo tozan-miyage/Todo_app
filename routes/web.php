@@ -45,4 +45,10 @@ Route::resource("tags", "TagController")->middleware('auth');
 // |        | PUT|PATCH | tags/{tag}                     | tags.update         | App\Http\Controllers\TagController@update                              | web,auth     |
 // |        | DELETE    | tags/{tag}                     | tags.destroy        | App\Http\Controllers\TagController@destroy                             | web,auth     |
 // |        | GET|HEAD  | tags/{tag}/edit                | tags.edit           | App\Http\Controllers\TagController@edit                                | web,auth     |
+
+Route::post('/goals/{goal}/todos/{todo}/tags/{tag}', 'TodoController@addTag')->middleware('auth');
+
+Route::delete('/goals/{goal}/todos/{todo}/tags/{tag}', 'TodoController@removeTag')->middleware('auth');
+
+
 Auth::routes();

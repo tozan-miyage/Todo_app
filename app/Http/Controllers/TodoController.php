@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Todo;
 // リレーションを使用するために追加
 use App\Goal;
+use App\Tag;
 use Illuminate\Http\Request;
 // ログインしているユーザーのTodoのみをレスポンスとして返す
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +21,9 @@ class TodoController extends Controller
     public function index(Request $request, Goal $goal)
     {
         // $goalに紐づいたtodo()を昇順で、doneがtrueでポジションがあるもの？？
-        $todos = $goal->todos()->orderBy('done','asc')->orderBy('position','asc')->get();
+        // $todos = $goal->todos()->orderBy('done','asc')->orderBy('position','asc')->get();
+        
+        $todos = $goal->todos()->with('tags')->orderBy('done','asc')->orderBy('position','asc')->get();
         
         return response()->json($todos);
     }
@@ -49,7 +52,8 @@ class TodoController extends Controller
         // 保存
         $todo->save();
         
-        $todos = $goal->todos()->orderBy('done','asc')->orderBy('position','asc')->get();
+        // goalに紐づいた、tososとtagsを引っ張ってきてくれ
+        $todos = $goal->todos()->with('tags')->orderBy('done','asc')->orderBy('position','asc')->get();
         return response()->json($todos);
     }
 
@@ -69,7 +73,7 @@ class TodoController extends Controller
         // 保存
         $todo->save();
         
-        $todos = $goal->todos()->orderBy('done','asc')->orderBy('position','asc')->get();
+        $todos = $goal->todos()->with('tags')->orderBy('done','asc')->orderBy('position','asc')->get();
         return response()->json($todos);
     }
 
@@ -83,7 +87,7 @@ class TodoController extends Controller
     {
         $todo->delete();
         
-        $todos = $goal->todos()->orderBy('done','asc')->orderBy('position','asc')->get();
+        $todos = $goal->todos()->with('tags')->orderBy('done','asc')->orderBy('position','asc')->get();
         return response()->json($todos);
         
     }
@@ -102,7 +106,24 @@ class TodoController extends Controller
             $todo->moveAfter($exchangetodo);
         }
         
-        $todos = $goal->todos()->orderBy('done','asc')->orderBy('position','asc')->get();
+        $todos = $goal->todos()->with('tags')->orderBy('done','asc')->orderBy('position','asc')->get();
+        
+        return response()->json($todos);
+    }
+    public function addTag(Request $request,Goal $goal, Todo $todo, Tag $tag)
+    {
+        // $todoと$tagを中間テーブルで紐づける。
+        $todo->tags()->attach($tag->id);
+        
+        $todos = $goal()->todos()->with('tags')->orderBy('done','asc')->orderBy('position','asc')->get();
+        
+        return response()->json($todos);
+    }
+    public function removeTag(Request $request,Goal $goal, Todo $todo, Tag $tag)
+    {
+        $todo->tags()->detach($tag->id);
+        
+        $todos = $goal->todos()->with('tags')->orderBy('done','asc')->orderBy('position','asc')->get();
         
         return response()->json($todos);
     }

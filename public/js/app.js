@@ -2027,6 +2027,49 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2035,7 +2078,10 @@ __webpack_require__.r(__webpack_exports__);
     return {
       id: "",
       title: "",
-      goals: []
+      tagId: "",
+      tagTitle: "",
+      goals: [],
+      tags: []
     };
   },
   components: {
@@ -2043,6 +2089,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     this.getAllGaols();
+    this.getAllTags();
   },
   methods: {
     getAllGaols: function getAllGaols() {
@@ -2107,6 +2154,73 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
       this.id = "";
+    },
+    getAllTags: function getAllTags() {
+      var _this5 = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("/tags").then(function (response) {
+        console.log(response);
+
+        for (var i = 0; i < response.data.length; i++) {
+          _this5.tags.push(response.data[i]);
+
+          console.log(_this5.tags[i]);
+        }
+
+        console.log(_this5.tags);
+      }, function (error) {
+        console.log(error);
+      });
+    },
+    addNewTag: function addNewTag() {
+      var _this6 = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['X-CSRF-TOKEN'] = jquery__WEBPACK_IMPORTED_MODULE_1___default()('meta[name=csrf-token]').attr('content');
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['content-type'] = 'application/json';
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post("/tags", {
+        title: this.tagTitle
+      }).then(function (response) {
+        _this6.tags.length = 0;
+
+        for (var i = 0; i < response.data.length; i++) {
+          _this6.tags.push(response.data[i]);
+        }
+      }, function (error) {
+        console.log(error);
+      });
+      this.tagTitle = "";
+    },
+    editTagTitle: function editTagTitle(id) {
+      var _this7 = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['X-CSRF-TOKEN'] = jquery__WEBPACK_IMPORTED_MODULE_1___default()('meta[name=csrf-token]').attr('content');
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['content-type'] = 'application/json';
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post("/tags/".concat(id), {
+        title: this.tagTitle,
+        _method: 'patch'
+      }).then(function (response) {
+        _this7.tags.length = 0;
+
+        for (var i = 0; i < response.data.length; i++) {
+          _this7.tags.push(response.data[i]);
+        }
+      }, function (error) {
+        console.log(error);
+      });
+      this.tagTitle = "";
+    },
+    deleteTag: function deleteTag(id) {
+      var _this8 = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['X-CSRF-TOKEN'] = jquery__WEBPACK_IMPORTED_MODULE_1___default()('meta[name=csrf-token]').attr('content');
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['content-type'] = 'application/json';
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post("/tags/".concat(id), {
+        _method: 'delete'
+      }).then(function (response) {
+        _this8.tags = response.data;
+      }, function (error) {
+        console.log(error);
+      });
     }
   }
 });
@@ -2229,6 +2343,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2238,11 +2370,13 @@ __webpack_require__.r(__webpack_exports__);
       id: "",
       content: "",
       todos: [],
+      tags: [],
       sort_id: ""
     };
   },
   mounted: function mounted() {
     this.getAllTodos();
+    this.getAllTags();
   },
   methods: {
     getAllTodos: function getAllTodos() {
@@ -2258,8 +2392,67 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
     },
-    addNewTodo: function addNewTodo() {
+    getAllTags: function getAllTags() {
       var _this2 = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("/tags").then(function (response) {
+        console.log(response);
+
+        for (var i = 0; i < response.data.length; i++) {
+          _this2.tags.push(response.data[i]);
+
+          console.log(_this2.tags[i]);
+        }
+
+        console.log(_this2.tags);
+      }, function (error) {
+        console.log(error);
+      });
+    },
+    checkTag: function checkTag(tags, title) {
+      var result = tags.filter(function (item, index) {
+        if (item.title === title) return true;
+      });
+      console.log(result.length);
+
+      if (result.length > 0) {
+        return result[0].title == title;
+      }
+
+      return false;
+    },
+    addTodoTag: function addTodoTag(todoId, tagId) {
+      var _this3 = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['X-CSRF-TOKEN'] = jquery__WEBPACK_IMPORTED_MODULE_1___default()('meta[name=csrf-token]').attr('content');
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['content-type'] = 'application/json';
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post("/goals/".concat(this.goalId, "/todos/").concat(todoId, "/tags/").concat(tagId)).then(function (response) {
+        _this3.todos.length = 0;
+
+        for (var i = 0; i < response.data.length; i++) {
+          _this3.todos.push(response.data[i]);
+        }
+      }, function (error) {
+        console.log(error);
+      });
+      this.$forceUpdate();
+    },
+    removeTodoTag: function removeTodoTag(todoId, tagId) {
+      var _this4 = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['X-CSRF-TOKEN'] = jquery__WEBPACK_IMPORTED_MODULE_1___default()('meta[name=csrf-token]').attr('content');
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['content-type'] = 'application/json';
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post("/goals/".concat(this.goalId, "/todos/").concat(todoId, "/tags/").concat(tagId), {
+        _method: "delete"
+      }).then(function (response) {
+        _this4.todos = response.data;
+      }, function (error) {
+        console.log(error);
+      });
+      this.$forceUpdate();
+    },
+    addNewTodo: function addNewTodo() {
+      var _this5 = this;
 
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['X-CSRF-TOKEN'] = jquery__WEBPACK_IMPORTED_MODULE_1___default()('meta[name=csrf-token]').attr('content');
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['content-type'] = 'application/json';
@@ -2267,10 +2460,10 @@ __webpack_require__.r(__webpack_exports__);
         content: this.content,
         position: this.todos.length
       }).then(function (response) {
-        _this2.todos.length = 0;
+        _this5.todos.length = 0;
 
         for (var i = 0; i < response.data.length; i++) {
-          _this2.todos.push(response.data[i]);
+          _this5.todos.push(response.data[i]);
         }
       }, function (error) {
         console.log(error);
@@ -2278,7 +2471,7 @@ __webpack_require__.r(__webpack_exports__);
       this.content = "";
     },
     doneTodoUpdate: function doneTodoUpdate(todo) {
-      var _this3 = this;
+      var _this6 = this;
 
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['X-CSRF-TOKEN'] = jquery__WEBPACK_IMPORTED_MODULE_1___default()('meta[name=csrf-token]').attr('content');
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['content-type'] = 'application/json';
@@ -2289,11 +2482,11 @@ __webpack_require__.r(__webpack_exports__);
         done: done,
         _method: "patch"
       }).then(function (response) {
-        _this3.todos.length = 0;
+        _this6.todos.length = 0;
         console.log(response);
 
         for (var i = 0; i < response.data.length; i++) {
-          _this3.todos.push(response.data[i]);
+          _this6.todos.push(response.data[i]);
         }
       }, function (error) {
         console.log(error);
@@ -2301,7 +2494,7 @@ __webpack_require__.r(__webpack_exports__);
       this.content = "";
     },
     editTodoContent: function editTodoContent(todo) {
-      var _this4 = this;
+      var _this7 = this;
 
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['X-CSRF-TOKEN'] = jquery__WEBPACK_IMPORTED_MODULE_1___default()('meta[name=csrf-token]').attr('content');
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['content-type'] = 'application/json';
@@ -2311,11 +2504,11 @@ __webpack_require__.r(__webpack_exports__);
         done: todo.done,
         _method: "patch"
       }).then(function (response) {
-        _this4.todos.length = 0;
+        _this7.todos.length = 0;
         console.log(response);
 
         for (var i = 0; i < response.data.length; i++) {
-          _this4.todos.push(response.data[i]);
+          _this7.todos.push(response.data[i]);
         }
       }, function (error) {
         console.log(error);
@@ -2323,7 +2516,7 @@ __webpack_require__.r(__webpack_exports__);
       this.content = "";
     },
     deleteTodo: function deleteTodo(todo) {
-      var _this5 = this;
+      var _this8 = this;
 
       if (confirm("Delete?")) {
         axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['X-CSRF-TOKEN'] = jquery__WEBPACK_IMPORTED_MODULE_1___default()('meta[name=csrf-token]').attr('content');
@@ -2331,14 +2524,14 @@ __webpack_require__.r(__webpack_exports__);
         axios__WEBPACK_IMPORTED_MODULE_0___default.a.post("/goals/".concat(this.goalId, "/todos/").concat(todo.id), {
           _method: "delete"
         }).then(function (response) {
-          _this5.todos = response.data;
+          _this8.todos = response.data;
         }, function (error) {
           console.log(error);
         });
       }
     },
     sortTodo: function sortTodo(todo) {
-      var _this6 = this;
+      var _this9 = this;
 
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['X-CSRF-TOKEN'] = jquery__WEBPACK_IMPORTED_MODULE_1___default()('meta[name=csrf-token]').attr('content');
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.defaults.headers['content-type'] = 'application/json';
@@ -2346,11 +2539,11 @@ __webpack_require__.r(__webpack_exports__);
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.post("/goals/".concat(this.goalId, "/todos/").concat(todo.id, "/sort"), {
         sortId: this.sort_id - 1
       }).then(function (response) {
-        _this6.todos.length = 0;
+        _this9.todos.length = 0;
         console.log(response);
 
         for (var i = 0; i < response.data.length; i++) {
-          _this6.todos.push(response.data[i]);
+          _this9.todos.push(response.data[i]);
         }
       }, function (error) {
         console.log(error);
@@ -38007,6 +38200,12 @@ var render = function() {
     }),
     _c("span", { staticClass: "align-middle" }, [_vm._v(" Create A New Goal")]),
     _vm._v(" "),
+    _c("i", {
+      staticClass: "fa fa-plus align-middle pl-4 pr-1",
+      attrs: { "data-toggle": "modal", "data-target": "#tagModal" }
+    }),
+    _c("span", { staticClass: "align-middle" }, [_vm._v("Manage Tag")]),
+    _vm._v(" "),
     _c(
       "div",
       {
@@ -38072,7 +38271,7 @@ var render = function() {
       {
         staticClass: "modal fade",
         attrs: {
-          id: "editGoalModal",
+          id: "tagModal",
           tabindex: "-1",
           role: "dialog",
           "aria-labelledby": "exampleModalLabel",
@@ -38086,6 +38285,234 @@ var render = function() {
           [
             _c("div", { staticClass: "modal-content" }, [
               _vm._m(1),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "modal-body" },
+                [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.tagTitle,
+                        expression: "tagTitle"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    domProps: { value: _vm.tagTitle },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.tagTitle = $event.target.value
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _vm._l(_vm.tags, function(key, index) {
+                    return _c("div", { key: index }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-secondary m-1",
+                          attrs: {
+                            "data-toggle": "modal",
+                            "data-target": "#editTagModal",
+                            "data-dismiss": "modal"
+                          },
+                          on: {
+                            click: function($event) {
+                              _vm.tagTitle = _vm.tags[index].title
+                              _vm.tagId = _vm.tags[index].id
+                            }
+                          }
+                        },
+                        [_vm._v(_vm._s(_vm.tags[index].title))]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-danger m-1",
+                          on: {
+                            click: function($event) {
+                              return _vm.deleteTag(_vm.tags[index].id)
+                            }
+                          }
+                        },
+                        [_vm._v("✖")]
+                      )
+                    ])
+                  })
+                ],
+                2
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-footer" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-secondary",
+                    attrs: { type: "button" },
+                    on: { click: _vm.addNewTag }
+                  },
+                  [_vm._v("Add")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { type: "button", "data-dismiss": "modal" }
+                  },
+                  [_vm._v("Save changes")]
+                )
+              ])
+            ])
+          ]
+        )
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: {
+          id: "editTagModal",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "exampleModalLabel",
+          "aria-hidden": "true"
+        }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "modal-dialog", attrs: { role: "document" } },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _c("div", { staticClass: "modal-header" }, [
+                _c(
+                  "h5",
+                  {
+                    staticClass: "modal-title",
+                    attrs: { id: "exampleModalLabel" }
+                  },
+                  [_vm._v("Edit Tag Name")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "close",
+                    attrs: {
+                      type: "button",
+                      "data-dismiss": "modal",
+                      "aria-label": "Close",
+                      "data-toggle": "modal",
+                      "data-target": "#tagModal"
+                    },
+                    on: {
+                      click: function($event) {
+                        _vm.tagTitle = ""
+                        _vm.tagId = ""
+                      }
+                    }
+                  },
+                  [
+                    _c("span", { attrs: { "aria-hidden": "true" } }, [
+                      _vm._v("×")
+                    ])
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-body" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.tagTitle,
+                      expression: "tagTitle"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  domProps: { value: _vm.tagTitle },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.tagTitle = $event.target.value
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-footer" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-secondary",
+                    attrs: { type: "button", "data-dismiss": "modal" },
+                    on: {
+                      click: function($event) {
+                        return _vm.editTagTitle(_vm.tagId)
+                      }
+                    }
+                  },
+                  [_vm._v("Edit")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: {
+                      type: "button",
+                      "data-dismiss": "modal",
+                      "data-toggle": "modal",
+                      "data-target": "#tagModal"
+                    },
+                    on: {
+                      click: function($event) {
+                        _vm.tagTitle = ""
+                        _vm.tagId = ""
+                      }
+                    }
+                  },
+                  [_vm._v("Save changes")]
+                )
+              ])
+            ])
+          ]
+        )
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: {
+          id: "editGoalModal",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "exampleModalLabel",
+          "aria-hidden": "true"
+        }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "modal-dialog", attrs: { role: "document" } },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _vm._m(2),
               _vm._v(" "),
               _c("div", { staticClass: "modal-body" }, [
                 _c("input", {
@@ -38145,7 +38572,7 @@ var render = function() {
           { staticClass: "modal-dialog", attrs: { role: "document" } },
           [
             _c("div", { staticClass: "modal-content" }, [
-              _vm._m(2),
+              _vm._m(3),
               _vm._v(" "),
               _c("div", { staticClass: "modal-footer" }, [
                 _c(
@@ -38261,6 +38688,31 @@ var staticRenderFns = [
         "h5",
         { staticClass: "modal-title", attrs: { id: "exampleModalLabel" } },
         [_vm._v("New Goal Name")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "h5",
+        { staticClass: "modal-title", attrs: { id: "exampleModalLabel" } },
+        [_vm._v("New Tag Name")]
       ),
       _vm._v(" "),
       _c(
@@ -38427,6 +38879,22 @@ var render = function() {
                       ]),
                       _vm._v(" "),
                       _c(
+                        "div",
+                        { staticClass: "mb-2" },
+                        [
+                          _vm._v("\n                        Tag："),
+                          _vm._l(todo.tags, function(key, index) {
+                            return _c("span", { key: index }, [
+                              _c("small", { staticClass: "mr-1" }, [
+                                _vm._v(_vm._s(todo.tags[index].title))
+                              ])
+                            ])
+                          })
+                        ],
+                        2
+                      ),
+                      _vm._v(" "),
+                      _c(
                         "h6",
                         { staticClass: "card-subtitle mb-2 text-muted" },
                         [_vm._v(_vm._s(todo.created_at))]
@@ -38548,6 +39016,22 @@ var render = function() {
                       _c("h5", { staticClass: "card-title" }, [
                         _c("s", [_vm._v(_vm._s(todo.content))])
                       ]),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "mb-2" },
+                        [
+                          _vm._v("\n                        Tag："),
+                          _vm._l(todo.tags, function(key, index) {
+                            return _c("span", { key: index }, [
+                              _c("small", { staticClass: "mr-1" }, [
+                                _vm._v(_vm._s(todo.tags[index].title))
+                              ])
+                            ])
+                          })
+                        ],
+                        2
+                      ),
                       _vm._v(" "),
                       _c(
                         "h6",
@@ -38683,28 +39167,79 @@ var render = function() {
                   _c("div", { staticClass: "modal-content" }, [
                     _vm._m(1, true),
                     _vm._v(" "),
-                    _c("div", { staticClass: "modal-body" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.content,
-                            expression: "content"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        domProps: { value: _vm.content },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
+                    _c(
+                      "div",
+                      { staticClass: "modal-body" },
+                      [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.content,
+                              expression: "content"
                             }
-                            _vm.content = $event.target.value
+                          ],
+                          staticClass: "form-control",
+                          domProps: { value: _vm.content },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.content = $event.target.value
+                            }
                           }
-                        }
-                      })
-                    ]),
+                        }),
+                        _vm._v(" "),
+                        _vm._l(_vm.tags, function(key, index) {
+                          return _c("div", { key: index }, [
+                            _c("div", { staticClass: "form-check" }, [
+                              _vm.checkTag(todo.tags, _vm.tags[index].title)
+                                ? _c("span", [
+                                    _c("span", [_vm._v("✔")]),
+                                    _vm._v(" "),
+                                    _c(
+                                      "button",
+                                      {
+                                        staticClass: "btn btn-secondary m-1",
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.removeTodoTag(
+                                              todo.id,
+                                              _vm.tags[index].id
+                                            )
+                                          }
+                                        }
+                                      },
+                                      [_vm._v(_vm._s(_vm.tags[index].title))]
+                                    )
+                                  ])
+                                : _c("span", [
+                                    _c("span", [_vm._v("▢")]),
+                                    _vm._v(" "),
+                                    _c(
+                                      "button",
+                                      {
+                                        staticClass: "btn btn-secondary m-1",
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.addTodoTag(
+                                              todo.id,
+                                              _vm.tags[index].id
+                                            )
+                                          }
+                                        }
+                                      },
+                                      [_vm._v(_vm._s(_vm.tags[index].title))]
+                                    )
+                                  ])
+                            ])
+                          ])
+                        })
+                      ],
+                      2
+                    ),
                     _vm._v(" "),
                     _c("div", { staticClass: "modal-footer" }, [
                       _c(
